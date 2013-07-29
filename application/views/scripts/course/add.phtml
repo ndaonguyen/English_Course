@@ -1,0 +1,57 @@
+<head>
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+<script type="text/javascript">
+    function checkInputExist(existString,inputCheck)
+    {
+        if(existString.indexOf(inputCheck)==-1)
+        {
+            return 1;
+        }        
+    }
+    
+    function addSkillText(e)
+    {
+        if (e.keyCode == 13) {            
+            var tb = document.getElementById("skill");
+            var existCon = document.getElementById('skillShow');
+            existCon.innerHTML = existCon.innerHTML + "<div style='padding-left:20px;padding-bottom:10px;text-weight:bold'> +" +tb.value + "</div>";
+            document.getElementById("skill").value="";
+            document.getElementById("skill").focus();
+          }          
+    }
+
+    $(document).ready(function() {
+            $('#addSkill').click(function (){    
+            var existCon = document.getElementById('skillInput');
+            if(checkInputExist(existCon.innerHTML,"input") == 1)
+            {
+                var newMsg   = "<br><span style='padding-left:20px;top:20px'><input type='text' name ='skill' id='skill'  onkeypress='return addSkillText(event)'  /></span>";    
+                existCon.innerHTML = existCon.innerHTML +  newMsg;
+                document.getElementById('skill').focus();
+            }        
+        });
+    });
+    </script>
+</head>
+
+
+<h3><a href="<?php echo $this->baseUrl(); ?>">HOMEPAGE </a> >> Add Course </h3>
+<hr />
+<br />
+
+
+<div id="skillShow" style="font-size: 12px;" ><h4 style="text-decoration: underline;">Skill</h4>
+<?php  
+    $str = "";
+    foreach($this->arrSkills as $skill)
+    {
+        $str = $str.$skill->getName()."<br>";
+    }    
+    $str = substr($str,0,strlen($str)-1);
+    echo $str;
+?> 
+</div>
+
+
+<div id="skillInput"></div>
+<div style="padding-top: 10px;"><input type="button" value="+ (Add skill)" id="addSkill"  name="addSkill" /></div>
