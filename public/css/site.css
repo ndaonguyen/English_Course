@@ -54,7 +54,7 @@ form #submitbutton {
     float:left;
     display:table-column;
     width:180px;
-    background-color:#ccc;
+  /*  background-color:#ccc; */
 }
 
 .headRow

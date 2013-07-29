@@ -49,6 +49,12 @@ class Application_Model_CourseMapper
 			$this->getDbTable()->update($data, $key);
 		}
 	}
+    
+    public function getLastInsert()
+    {
+        return $this->getDbTable()->getAdapter()->lastInsertId();
+    }
+    
 	public function delete(){
 		$item = $this;
 		$old = $item;

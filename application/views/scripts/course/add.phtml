@@ -12,24 +12,76 @@
     function addSkillText(e)
     {
         if (e.keyCode == 13) {            
-            var tb = document.getElementById("skill");
-            var existCon = document.getElementById('skillShow');
-            existCon.innerHTML = existCon.innerHTML + "<div style='padding-left:20px;padding-bottom:10px;text-weight:bold'> +" +tb.value + "</div>";
-            document.getElementById("skill").value="";
+            var tb             = document.getElementById("skill");
+            var existCon       = document.getElementById('skillShow');
+            existCon.innerHTML = existCon.innerHTML + "<div class='skillUse' style='padding-left:20px;padding-bottom:10px;font-weight:bold;font-size:10px'> +" +tb.value + "</div>";
+            document.getElementById("skill").value = "";
             document.getElementById("skill").focus();
+            return false;
           }          
     }
 
+    function addPopularSkill(popularSkill)
+    {
+        var existCon          = document.getElementById('skillShow');
+        existCon.innerHTML    = existCon.innerHTML + "<div class='skillUse' style='padding-left:20px;padding-bottom:10px;font-weight:bold;font-size:10px'> +" +popularSkill + "</div>";
+        document.getElementById(popularSkill).style.visibility = 'hidden';
+        return false;
+    }
+    
+    function showElement()
+    {
+        var arrSkills     = document.getElementsByClassName("skillUse");
+        alert(arrSkills[0].innerHTML);
+    }
+    
     $(document).ready(function() {
             $('#addSkill').click(function (){    
-            var existCon = document.getElementById('skillInput');
-            if(checkInputExist(existCon.innerHTML,"input") == 1)
-            {
-                var newMsg   = "<br><span style='padding-left:20px;top:20px'><input type='text' name ='skill' id='skill'  onkeypress='return addSkillText(event)'  /></span>";    
-                existCon.innerHTML = existCon.innerHTML +  newMsg;
-                document.getElementById('skill').focus();
-            }        
-        });
+                var existCon = document.getElementById('skillInput');
+                if(checkInputExist(existCon.innerHTML,"input") == 1)
+                {
+                    var newMsg   = "<br><span style='padding-left:20px;top:20px'><input type='text' name ='skill' id='skill'  onkeypress='return addSkillText(event)'  /></span>";    
+                    existCon.innerHTML = existCon.innerHTML +  newMsg;
+                    document.getElementById('skill').focus();
+                }        
+            });
+            
+            $('#addCourse').click(function(){
+                var courseName = document.getElementById("courseName").value;
+                $.ajax({
+                        type: 'POST',
+                        dataType: 'json',
+                        url: 'http://127.0.0.1/English_Course/public/course/create',
+                        cache: true,
+                        async: true,
+                        // you can use an object here
+                        data: { "courseName" : courseName},
+                        success: function(json1){
+                            if(json1.result=="success")
+                            {
+                                document.getElementById("showCourseName").innerHTML = "Class : "+json1.courseName;
+                                var el = document.getElementById( 'step1' );
+                                el.parentNode.removeChild( el );                                
+                                document.getElementById("step2").style.visibility = 'visible';
+                            }
+                            else
+                            {
+                                document.getElementById("resultFail").innerHTML = "Create new class : fail. Try again !!!";
+                            }
+                         },
+                        error:function(json1){
+                            if(json1.result=="success")
+                            {
+                                document.getElementById("showCourseName").innerHTML = json1.courseName;
+                            }
+                            else
+                            {
+                                document.getElementById("resultFail").innerHTML = "Create new class : fail";
+                            }
+                        }   
+                        }); 
+               
+            });
     });
     </script>
 </head>
@@ -37,21 +89,46 @@
 
 <h3><a href="<?php echo $this->baseUrl(); ?>">HOMEPAGE </a> >> Add Course </h3>
 <hr />
-<br />
 
+<h5><div style="color: red;" id="showCourseName"></div></h5>
+<div id="showStep"></div>
+<div style="font-size: 12px;color:red" id="resultFail"></div>
 
-<div id="skillShow" style="font-size: 12px;" ><h4 style="text-decoration: underline;">Skill</h4>
-<?php  
-    $str = "";
-    foreach($this->arrSkills as $skill)
-    {
-        $str = $str.$skill->getName()."<br>";
-    }    
-    $str = substr($str,0,strlen($str)-1);
-    echo $str;
-?> 
+<div id="step1" style="font-size: 12px;">
+<h4>Step 1: Course name (Ielts)</h4>
+Set course name: <input type="text" name="courseName" id="courseName"  />
+<input type="button" value="Save Course" id="addCourse" name="btnSaveCourse" />
 </div>
 
+<div style="visibility: hidden;" id="step2">
+<h5>Step 2: Add Skill</h5>
+<div class="divTable">
+    <div class="divRow">
+        <div  class="divCell" style="font-size: 12px;">
+        <?php  
+            $str = "<span style='font-weight:bold'>Popular Skill:</span><br>";
+            foreach($this->arrSkills as $skill)
+            {
+                $str = $str."<br>"."&nbsp&nbsp&nbsp&nbsp&nbsp";
+                $str = $str."<span id='".$skill->getName()."' ><input type='button' onclick='addPopularSkill("."\"".$skill->getName()."\"".")' value='>>' />".$skill->getName()."</span>";      
+            }    
+            echo $str."<br>";
+            echo "<br>";
+        ?>
+        </div>
+    
+        <div class="divCell">
+            <div style="text-decoration: underline; font-size: 12px;font-weight: bold; padding-bottom:10px ">Skill</div>
+            <div id="skillShow" style="font-size: 12px;" >
+            </div>
+            <div id="skillInput"></div>
+            <div style="padding-top: 10px;"><input type="button" value="+ (Add skill)" id="addSkill"  name="addSkill" /></div>
+        </div>
+    </div>
+    <div align="center"><input type="button" onclick="showElement()" value="Save skill" /></div>
+</div>
+</div>
 
-<div id="skillInput"></div>
-<div style="padding-top: 10px;"><input type="button" value="+ (Add skill)" id="addSkill"  name="addSkill" /></div>
+<div id="step3" style="visibility: hidden;">
+
+</div>
