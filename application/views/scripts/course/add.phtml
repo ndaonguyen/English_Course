@@ -32,7 +32,12 @@
     function showElement()
     {
         var arrSkills     = document.getElementsByClassName("skillUse");
-        alert(arrSkills[0].innerHTML);
+        var strSkills     = "";
+        for(var i = 0; i<arrSkills.length;i++)
+        {
+            strSkills += arrSkills[i].innerHTML +",";
+        }
+        return strSkills;
     }
     
     $(document).ready(function() {
@@ -60,6 +65,8 @@
                             if(json1.result=="success")
                             {
                                 document.getElementById("showCourseName").innerHTML = "Class : "+json1.courseName;
+                                // add id vao 1 thang hidden de lay ra
+                                document.getElementById("idInsert").value = json1.id;
                                 var el = document.getElementById( 'step1' );
                                 el.parentNode.removeChild( el );                                
                                 document.getElementById("step2").style.visibility = 'visible';
@@ -72,7 +79,12 @@
                         error:function(json1){
                             if(json1.result=="success")
                             {
-                                document.getElementById("showCourseName").innerHTML = json1.courseName;
+                                 document.getElementById("showCourseName").innerHTML = "Class : "+json1.courseName;
+                                // add id vao 1 thang hidden de lay ra
+                                document.getElementById("idInsert").value = json1.id;
+                                var el = document.getElementById( 'step1' );
+                                el.parentNode.removeChild( el );                                
+                                document.getElementById("step2").style.visibility = 'visible';
                             }
                             else
                             {
@@ -80,8 +92,30 @@
                             }
                         }   
                         }); 
-               
+                    return false;
             });
+            
+            $('#btnAddSkill').click(function(){
+                var strSkill = showElement();
+            //    alert(strSkill);
+                $.ajax({
+                        type: 'POST',
+                        dataType: 'json',
+                        url: 'http://127.0.0.1/English_Course/public/skill/add',
+                        cache: true,
+                        async: true,
+                      
+                        data: { "strSkill" : strSkill},
+                        success: function(json1){
+                            
+                         },
+                        error:function(json1){
+                           
+                        }   
+                        }); 
+                    return false;
+            });
+            
     });
     </script>
 </head>
@@ -94,13 +128,13 @@
 <div id="showStep"></div>
 <div style="font-size: 12px;color:red" id="resultFail"></div>
 
-<div id="step1" style="font-size: 12px;">
+<div id="step1" style="font-size: 12px;visibility: hidden;"  >
 <h4>Step 1: Course name (Ielts)</h4>
 Set course name: <input type="text" name="courseName" id="courseName"  />
 <input type="button" value="Save Course" id="addCourse" name="btnSaveCourse" />
 </div>
 
-<div style="visibility: hidden;" id="step2">
+<div style="visibility: visible;" id="step2">
 <h5>Step 2: Add Skill</h5>
 <div class="divTable">
     <div class="divRow">
@@ -125,10 +159,13 @@ Set course name: <input type="text" name="courseName" id="courseName"  />
             <div style="padding-top: 10px;"><input type="button" value="+ (Add skill)" id="addSkill"  name="addSkill" /></div>
         </div>
     </div>
-    <div align="center"><input type="button" onclick="showElement()" value="Save skill" /></div>
+    <div align="center"><input type="button" id="btnAddSkill" value="Save skill" /></div>
 </div>
 </div>
 
 <div id="step3" style="visibility: hidden;">
 
 </div>
+
+
+<input type="hidden" name="idInsert" id="idInsert" />
