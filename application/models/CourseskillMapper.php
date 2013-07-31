@@ -1,23 +1,26 @@
 <?php
-class Application_Model_SkillMapper
+class Application_Model_CourseskillMapper
 {
 	protected $_dbTable;
-	public $_mId;
-	public $_mName;
+	public $_mCourseid;
+	public $_mSkillid;
 
 
-	public function getId(){
-		return $this->_mId;
+	public function getCourseid(){
+		return $this->_mCourseid;
 	}
-	public function setId($value){
-		$this->_mId = $value;
+    
+	public function setCourseid($value){
+		$this->_mCourseid = $value;
 		return $this;
 	}
-	public function getName(){
-		return $this->_mName;
+    
+	public function getSkillid(){
+		return $this->_mSkillid;
 	}
-	public function setName($value){
-		$this->_mName = $value;
+    
+	public function setSkillid($value){
+		$this->_mSkillid = $value;
 		return $this;
 	}
 
@@ -31,44 +34,49 @@ class Application_Model_SkillMapper
 	}
 	public function getDbTable(){
 		if (null === $this->_dbTable)
-			$this->setDbTable('Application_Model_DbTable_Skill');
+			$this->setDbTable('Application_Model_DbTable_Courseskill');
 		return $this->_dbTable;
 	}
+  
+    
 	public function save(Application_Model_SkillMapper $old = null){
 		$item = $this;
 		$data = array();
-		if(isset($item->_mId)) $data['id'] = $item->_mId;
-		if(isset($item->_mName)) $data['name'] = $item->_mName;
+		if(isset($item->_mCourseid)) $data['course_id'] = $item->_mCourseid;
+		if(isset($item->_mSkillid)) $data['skill_id'] = $item->_mSkillid;
 	
 		if($old === null)
 			$this->getDbTable()->insert($data);
 		else{
 			$key = array();
-			$old->_mId === null ? $key[] = 'id is NULL' : $key['id = ?'] =  $old->_mId;
+			$old->_mId === null ? $key[] = 'course_id is NULL' : $key['course_id = ?'] =  $old->_mId;
 
 			$this->getDbTable()->update($data, $key);
 		}
 	}
+    
 	public function delete(){
 		$item = $this;
 		$old = $item;
 		$key = array();
-			$old->_mId === null ? $key[] = 'id is NULL' : $key['id = ?'] =  $old->_mId;
+			$old->_mCourseid === null ? $key[] = 'course_id is NULL' : $key['course_id = ?'] =  $old->_mCourseid;
 
 		$this->getDbTable()->delete($key);
 	}
+    
 	public function fetchAll($where = null, $order = null, $count = null, $offset = null){
 		$resultSet = $this->getDbTable()->fetchAll($where, $order, $count, $offset);
 		$entries   = array();
 		foreach ($resultSet as $row) {
-			$item = new Application_Model_SkillMapper();
-			if(isset($row->id))$item->_mId = $row->id;
-			if(isset($row->name))$item->_mName = $row->name;
+			$item = new Application_Model_CourseskillMapper();
+			if(isset($row->course_id))$item->_mCourseid = $row->course_id;
+			if(isset($row->skill_id))$item->_mSkillid = $row->skill_id;
             
             $entries[] = $item;
 		}
 		return $entries;
 	}
+    
     public function getLastInsert()
     {
         return $this->getDbTable()->getAdapter()->lastInsertId();

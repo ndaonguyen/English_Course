@@ -1,5 +1,5 @@
 <?php
-class Application_Model_SkillMapper
+class Application_Model_MaterialMapper
 {
 	protected $_dbTable;
 	public $_mId;
@@ -31,7 +31,7 @@ class Application_Model_SkillMapper
 	}
 	public function getDbTable(){
 		if (null === $this->_dbTable)
-			$this->setDbTable('Application_Model_DbTable_Skill');
+			$this->setDbTable('Application_Model_DbTable_Material');
 		return $this->_dbTable;
 	}
 	public function save(Application_Model_SkillMapper $old = null){
@@ -61,7 +61,7 @@ class Application_Model_SkillMapper
 		$resultSet = $this->getDbTable()->fetchAll($where, $order, $count, $offset);
 		$entries   = array();
 		foreach ($resultSet as $row) {
-			$item = new Application_Model_SkillMapper();
+			$item = new Application_Model_MaterialMapper();
 			if(isset($row->id))$item->_mId = $row->id;
 			if(isset($row->name))$item->_mName = $row->name;
             

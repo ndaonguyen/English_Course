@@ -105,7 +105,7 @@
                         cache: true,
                         async: true,
                       
-                        data: { "strSkill" : strSkill},
+                        data: { "strSkill" : strSkill, "courseId" :document.getElementById("idInserted").value},
                         success: function(json1){
                             
                          },
@@ -128,11 +128,13 @@
 <div id="showStep"></div>
 <div style="font-size: 12px;color:red" id="resultFail"></div>
 
+
 <div id="step1" style="font-size: 12px;visibility: hidden;"  >
 <h4>Step 1: Course name (Ielts)</h4>
 Set course name: <input type="text" name="courseName" id="courseName"  />
 <input type="button" value="Save Course" id="addCourse" name="btnSaveCourse" />
 </div>
+
 
 <div style="visibility: visible;" id="step2">
 <h5>Step 2: Add Skill</h5>
@@ -163,9 +165,11 @@ Set course name: <input type="text" name="courseName" id="courseName"  />
 </div>
 </div>
 
+
+
 <div id="step3" style="visibility: hidden;">
 
 </div>
 
 
-<input type="hidden" name="idInsert" id="idInsert" />
+<input type="hidden" name="idInserted" id="idInserted" />
