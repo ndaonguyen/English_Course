@@ -29,9 +29,9 @@
         return false;
     }
     
-    function showElement()
+    function showElement(input)
     {
-        var arrSkills     = document.getElementsByClassName("skillUse");
+        var arrSkills     = document.getElementsByClassName(input);
         var strSkills     = "";
         for(var i = 0; i<arrSkills.length;i++)
         {
@@ -40,81 +40,215 @@
         return strSkills;
     }
     
+    function addMaterialText(eventPress,skillId)
+    {
+        if (eventPress.keyCode == 13) {
+            var tb             = document.getElementById("input"+skillId);
+            var existCon       = document.getElementById('skill'+skillId);
+            existCon.innerHTML = existCon.innerHTML + "<div class='materialInput"+skillId+"' style='padding-left:20px;padding-bottom:10px;font-size:11px'> +" +tb.value + "</div>";
+            document.getElementById("input"+skillId).value = "";
+            document.getElementById("input"+skillId).focus();
+            return false;
+        }
+    }
+    
+    function groupMaterial()
+    {
+        var skillIds         = document.getElementById("arrSkillIds").value; 
+        var arrSkill         = skillIds.split(",");
+        var arrSkillMaterial = new Array();
+        arrSkillMaterial.push(arrSkill);
+                
+        arrSkillMaterial[1] = new Array();
+        for(var i =0;i<arrSkill.length;i++)
+        {
+            var materials = showElement("materialInput"+arrSkill[i]);
+            arrSkillMaterial[1].push(materials);
+        }
+        return arrSkillMaterial;
+    }
+   /*
+        $materials      = explode(",",$strMaterial);
+        $materialReturn = array();
+        for($i=0;$i<sizeof($materials)-1;$i++)
+        {
+            $materialReturn[$i] = substr(rtrim(ltrim($materials[$i])),1);
+        }
+        return $materialReturn;
+   
+   
+   
+    function splitStringToArray(strSplit,deli)
+    {
+        
+        
+        
+    }
+    */
     $(document).ready(function() {
-            $('#addSkill').click(function (){    
-                var existCon = document.getElementById('skillInput');
-                if(checkInputExist(existCon.innerHTML,"input") == 1)
-                {
-                    var newMsg   = "<br><span style='padding-left:20px;top:20px'><input type='text' name ='skill' id='skill'  onkeypress='return addSkillText(event)'  /></span>";    
-                    existCon.innerHTML = existCon.innerHTML +  newMsg;
-                    document.getElementById('skill').focus();
-                }        
+        $('#addSkill').click(function (){    
+            var existCon = document.getElementById('skillInput');
+            if(checkInputExist(existCon.innerHTML,"input") == 1)
+            {
+                var newMsg   = "<br><span style='padding-left:20px;top:20px'><input type='text' name ='skill' id='skill'  onkeypress='return addSkillText(event)'  /></span>";    
+                existCon.innerHTML = existCon.innerHTML +  newMsg;
+                document.getElementById('skill').focus();
+            }      
+            return false;  
+        });
+          
+        
+        $('#addCourse').click(function(){
+            var courseName = document.getElementById("courseName").value;
+            $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: 'http://127.0.0.1/English_Course/public/course/create',
+                    cache: true,
+                    async: true,
+                    // you can use an object here
+                    data: { "courseName" : courseName},
+                    success: function(json1){
+                        if(json1.result=="success")
+                        {
+                            document.getElementById("showCourseName").innerHTML = "Class : "+json1.courseName;
+                            // add id vao 1 thang hidden de lay ra
+                            document.getElementById("idInserted").value = json1.id;
+                            var el = document.getElementById( 'step1' );
+                            el.parentNode.removeChild( el );                                
+                            document.getElementById("step2").style.visibility = 'visible';
+                        }
+                        else
+                        {
+                            document.getElementById("resultFail").innerHTML = "Create new class : fail. Try again !!!";
+                        }
+                     },
+                    error:function(json1){
+                        if(json1.result=="success")
+                        {
+                             document.getElementById("showCourseName").innerHTML = "Class : "+json1.courseName;
+                            // add id vao 1 thang hidden de lay ra
+                            document.getElementById("idInsert").value = json1.id;
+                            var el = document.getElementById( 'step1' );
+                            el.parentNode.removeChild( el );                                
+                            document.getElementById("step2").style.visibility = 'visible';
+                        }
+                        else
+                        {
+                            document.getElementById("resultFail").innerHTML = "Create new class : fail. Try again !!";
+                        }
+                    }   
+                    }); 
+                return false;
+        });
+       
+        $('#btnMaterial').click(function(){
+            var materialGroup = groupMaterial();
+ 
+            $.ajax({
+                type    : 'POST',
+                dataType: 'json',
+                url     : 'http://127.0.0.1/English_Course/public/material/add',
+                cache   : true,
+                async   : true,
+                data    : {"materialGroup":materialGroup ,"arrSkillIds" : document.getElementById('arrSkillIds').value, "arrSkills": document.getElementById("arrSkills").value},
+                success : function(json1){
+                    if(json1.result=="success")
+                    {
+                        var el = document.getElementById( 'step3' );
+                        el.parentNode.removeChild( el );      
+                    }
+                    else
+                    {
+                        
+                    }
+                },
+                error   :function(json1){
+                    if(json1.result=="success")
+                    {
+                        
+                        var el = document.getElementById( 'step3' );
+                        el.parentNode.removeChild( el ); 
+                    }
+                    else
+                    {
+                        
+                    }
+                }
             });
-            
-            $('#addCourse').click(function(){
-                var courseName = document.getElementById("courseName").value;
-                $.ajax({
-                        type: 'POST',
-                        dataType: 'json',
-                        url: 'http://127.0.0.1/English_Course/public/course/create',
-                        cache: true,
-                        async: true,
-                        // you can use an object here
-                        data: { "courseName" : courseName},
-                        success: function(json1){
-                            if(json1.result=="success")
+
+            return false;
+        });
+     
+        
+        $('#btnAddSkill').click(function(){
+            var strSkill = showElement("skillUse");
+            $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: 'http://127.0.0.1/English_Course/public/skill/add',
+                    cache: true,
+                    async: true,
+                  
+                    data: { "strSkill" : strSkill, "courseId" :document.getElementById("idInserted").value},
+                    success: function(json1){
+                        // step 3 : infoStep3
+                        if(json1.result=="success")
+                        {                               
+                            var el = document.getElementById( 'step2' );
+                            el.parentNode.removeChild( el );                                
+                            document.getElementById("step3").style.visibility = 'visible';
+                        
+                            var strStep3 = ""
+                            for(var i = 0;i<json1.arrSkillIds.length;i++)
                             {
-                                document.getElementById("showCourseName").innerHTML = "Class : "+json1.courseName;
-                                // add id vao 1 thang hidden de lay ra
-                                document.getElementById("idInsert").value = json1.id;
-                                var el = document.getElementById( 'step1' );
-                                el.parentNode.removeChild( el );                                
-                                document.getElementById("step2").style.visibility = 'visible';
+                                var strSkill = "<h5>"+json1.arrSkills[i]+"</h5>";
+                                strSkill     = strSkill + "<div name='showAddedMaterial' id='skill"+json1.arrSkillIds[i]+"'></div>"; 
+                                strSkill     = strSkill + "<input type='text' name='materialInput' id='input"+json1.arrSkillIds[i]+"' onkeypress='addMaterialText(event,"+json1.arrSkillIds[i]+")' />(Enter to add)"; 
+                                strStep3     = strStep3 +strSkill;
                             }
-                            else
-                            {
-                                document.getElementById("resultFail").innerHTML = "Create new class : fail. Try again !!!";
-                            }
-                         },
-                        error:function(json1){
-                            if(json1.result=="success")
-                            {
-                                 document.getElementById("showCourseName").innerHTML = "Class : "+json1.courseName;
-                                // add id vao 1 thang hidden de lay ra
-                                document.getElementById("idInsert").value = json1.id;
-                                var el = document.getElementById( 'step1' );
-                                el.parentNode.removeChild( el );                                
-                                document.getElementById("step2").style.visibility = 'visible';
-                            }
-                            else
-                            {
-                                document.getElementById("resultFail").innerHTML = "Create new class : fail";
-                            }
-                        }   
-                        }); 
-                    return false;
-            });
-            
-            $('#btnAddSkill').click(function(){
-                var strSkill = showElement();
-            //    alert(strSkill);
-                $.ajax({
-                        type: 'POST',
-                        dataType: 'json',
-                        url: 'http://127.0.0.1/English_Course/public/skill/add',
-                        cache: true,
-                        async: true,
-                      
-                        data: { "strSkill" : strSkill, "courseId" :document.getElementById("idInserted").value},
-                        success: function(json1){
                             
-                         },
-                        error:function(json1){
-                           
-                        }   
-                        }); 
-                    return false;
-            });
+                            document.getElementById("arrSkillIds").value = json1.arrSkillIds;
+                            document.getElementById("arrSkills").value = json1.arrSkills;
+                                                                                            
+                            var step3Info       = document.getElementById('infoStep3');
+                            step3Info.innerHTML = step3Info.innerHTML +  strStep3;                    
+                         }
+                        else
+                        {
+                            document.getElementById("resultFail").innerHTML = "Add Skill : fail. Try again !!!";
+                        }
+                     },
+                    error:function(json1){
+                       if(json1.result=="success")
+                        {
+                            var el = document.getElementById( 'step2' );
+                            el.parentNode.removeChild( el );                                
+                            document.getElementById("step3").style.visibility = 'visible';
+                        
+                            var strStep3 = ""
+                            for(var i = 0;i<json1.arrSkillIds.length;i++)
+                            {
+                                var strSkill = "<h5>"+json1.arrSkills[i]+"</h5>";
+                                strSkill     = strSkill + "<div name='showAddedMaterial' id='skill"+json1.arrSkillIds[i]+"'></div>"; 
+                                strSkill     = strSkill + "<input type='text' name='materialInput' id='input"+json1.arrSkillIds[i]+"' onkeypress='addMaterialText(event,"+json1.arrSkillIds[i]+")' />(Enter to add)"; 
+                                strStep3     = strStep3 +strSkill;
+                            }
+                            document.getElementById("arrSkillIds").value = json1.arrSkillIds;
+                            document.getElementById("arrSkills").value = json1.arrSkills;
+                                                                                            
+                            var step3Info       = document.getElementById('infoStep3');
+                            step3Info.innerHTML = step3Info.innerHTML +  strStep3;  
+                        }
+                        else
+                        {
+                            document.getElementById("resultFail").innerHTML = "Add Skill : fail. Try again !!!";
+                        }
+                    }   
+                    }); 
+                return false;
+        });
+
             
     });
     </script>
@@ -126,17 +260,18 @@
 
 <h5><div style="color: red;" id="showCourseName"></div></h5>
 <div id="showStep"></div>
+
 <div style="font-size: 12px;color:red" id="resultFail"></div>
 
 
-<div id="step1" style="font-size: 12px;visibility: hidden;"  >
+<div id="step1" style="font-size: 12px;visibility: visible;"  >
 <h4>Step 1: Course name (Ielts)</h4>
 Set course name: <input type="text" name="courseName" id="courseName"  />
 <input type="button" value="Save Course" id="addCourse" name="btnSaveCourse" />
 </div>
 
 
-<div style="visibility: visible;" id="step2">
+<div style="visibility: hidden ;" id="step2">
 <h5>Step 2: Add Skill</h5>
 <div class="divTable">
     <div class="divRow">
@@ -166,10 +301,20 @@ Set course name: <input type="text" name="courseName" id="courseName"  />
 </div>
 
 
-
-<div id="step3" style="visibility: hidden;">
-
+<div id="step3" style="visibility: hidden;font-size:13px">
+<h5>Step 3: Add Material</h5>
+    <div id="infoStep3" style="padding-left: 30px;"></div>
+    <div style="padding-left: 50px;padding-top: 20px;"><input type='button' name='btnMaterial' id='btnMaterial' value='Save Material'  /></div>
 </div>
 
 
+
+
+
+
+
+
+
 <input type="hidden" name="idInserted" id="idInserted" />
+<input type="hidden" name="arrSkillIds" id="arrSkillIds" />
+<input type="hidden" name="arrSkills" id="arrSkills" />
